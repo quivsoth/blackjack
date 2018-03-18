@@ -24,7 +24,7 @@ export class BlackjackHand extends Array<Card> implements IBlackjackGameOptions 
 
     Blackjack = (): boolean => {
         if (this.length === 2) {
-            if (this.filter(x => x.cardface == CardFace.ACE).length == 1
+            if (this.HasAce()
                 && (this.filter(x => x.cardface == CardFace.KING).length == 1
                     || this.filter(x => x.cardface == CardFace.QUEEN).length == 1
                     || this.filter(x => x.cardface == CardFace.JACK).length == 1
@@ -44,6 +44,13 @@ export class BlackjackHand extends Array<Card> implements IBlackjackGameOptions 
 
     Double = (): boolean => {
         if (this.length === 2) {
+            return true;
+        }
+        return false;
+    }
+
+    HasAce = (): boolean => {
+        if (this.filter(x => x.cardface == CardFace.ACE).length >= 1) {
             return true;
         }
         return false;

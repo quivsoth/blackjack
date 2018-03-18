@@ -27,7 +27,7 @@ var BlackjackHand = /** @class */ (function (_super) {
         };
         _this.Blackjack = function () {
             if (_this.length === 2) {
-                if (_this.filter(function (x) { return x.cardface == cardEnums_1.CardFace.ACE; }).length == 1
+                if (_this.HasAce()
                     && (_this.filter(function (x) { return x.cardface == cardEnums_1.CardFace.KING; }).length == 1
                         || _this.filter(function (x) { return x.cardface == cardEnums_1.CardFace.QUEEN; }).length == 1
                         || _this.filter(function (x) { return x.cardface == cardEnums_1.CardFace.JACK; }).length == 1
@@ -45,6 +45,12 @@ var BlackjackHand = /** @class */ (function (_super) {
         };
         _this.Double = function () {
             if (_this.length === 2) {
+                return true;
+            }
+            return false;
+        };
+        _this.HasAce = function () {
+            if (_this.filter(function (x) { return x.cardface == cardEnums_1.CardFace.ACE; }).length >= 1) {
                 return true;
             }
             return false;

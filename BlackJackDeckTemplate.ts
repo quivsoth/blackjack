@@ -5,9 +5,7 @@ import { AllDeckTemplate } from "./AllDeckTemplate";
 
 export class BlackJackDeckTemplate extends AllDeckTemplate {
     constructor() {
-        // todo: this is not instantiating properly.. look to fix it
         super();
-
         this.name = "BlackJack Deck";
         this.description = "Single Deck of regular playing cards used for blackjack";
 
@@ -35,22 +33,3 @@ export class BlackJackDeckTemplate extends AllDeckTemplate {
         }
     }
 }
-
-// export class BlackJackStrategy {
-//     constructor() {
-//         let wb:XLSX.IWorkBook = XLSX.readFile("blackJackBasicStrategy.xlsx");
-//         console.log(this.to_json(wb));
-//     }
-
-
-//     to_json(workbook) {
-//         var result = {};
-//         workbook.SheetNames.forEach(function(sheetName) {
-//             var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-//             if(roa.length > 0){
-//                 result[sheetName] = roa;
-//             }
-//         });
-//         return result;
-//     }
-// }

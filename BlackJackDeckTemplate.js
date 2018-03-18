@@ -17,9 +17,7 @@ var AllDeckTemplate_1 = require("./AllDeckTemplate");
 var BlackJackDeckTemplate = /** @class */ (function (_super) {
     __extends(BlackJackDeckTemplate, _super);
     function BlackJackDeckTemplate() {
-        var _this = 
-        // todo: this is not instantiating properly.. look to fix it
-        _super.call(this) || this;
+        var _this = _super.call(this) || this;
         _this.name = "BlackJack Deck";
         _this.description = "Single Deck of regular playing cards used for blackjack";
         // suits used in this game
@@ -49,20 +47,4 @@ var BlackJackDeckTemplate = /** @class */ (function (_super) {
     return BlackJackDeckTemplate;
 }(AllDeckTemplate_1.AllDeckTemplate));
 exports.BlackJackDeckTemplate = BlackJackDeckTemplate;
-// export class BlackJackStrategy {
-//     constructor() {
-//         let wb:XLSX.IWorkBook = XLSX.readFile("blackJackBasicStrategy.xlsx");
-//         console.log(this.to_json(wb));
-//     }
-//     to_json(workbook) {
-//         var result = {};
-//         workbook.SheetNames.forEach(function(sheetName) {
-//             var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-//             if(roa.length > 0){
-//                 result[sheetName] = roa;
-//             }
-//         });
-//         return result;
-//     }
-// } 
 //# sourceMappingURL=BlackJackDeckTemplate.js.map

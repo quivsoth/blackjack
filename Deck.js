@@ -15,6 +15,12 @@ var Deck = /** @class */ (function (_super) {
     __extends(Deck, _super);
     function Deck(_template, autoShuffle) {
         var _this = _super.call(this) || this;
+        _this.addDecks = function (deckAmount, shuffle) {
+            for (var i = 0; i < deckAmount; i++) {
+                var deck = new Deck(_this.template, shuffle);
+                _this.push.apply(_this, deck);
+            }
+        };
         _this.shuffle = function () {
             //console.log("Shuffling....");
             for (var i = _this.length - 1; i > 0; i--) {
@@ -30,6 +36,7 @@ var Deck = /** @class */ (function (_super) {
         _this.getCard = function (_face, _suit) {
             return this.filter(function (x) { return x.cardface == _face; })[0];
         };
+        _this.template = _template;
         _this.push.apply(_this, _template.cards);
         if (autoShuffle) {
             _this.shuffle();

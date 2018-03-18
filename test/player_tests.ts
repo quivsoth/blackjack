@@ -1,41 +1,26 @@
 import "mocha";
 import { expect } from "chai";
-import { PlayerStrategem } from '../PlayerStrategem';
+import { PlayerGuide } from "../PlayerGuide";
 import { Card } from "../Card";
-import { CardFace, Suit, PlayerType, BlackjackOptions, GameResult } from "../cardEnums";
+import { CardFace, Suit, PlayerType, BlackjackOptions, GameResult, Game } from "../cardEnums";
 import { Deck } from "../Deck";
 import { BlackjackHand } from "../BlackjackHand";
 import { Table, TablePosition } from "../Table";
 import { Player } from "../Player";
 import { AllDeckTemplate } from "../AllDeckTemplate";
 import { BlackJackDeckTemplate } from "../BlackJackDeckTemplate";
+import { TableAutoBot } from "../TableAutoBot";
 
 describe("Tests for player interaction", function () {
-    let template: AllDeckTemplate;
-    var deck1: Deck;
-    var deck2: Deck;
-    var deck3: Deck;
-    var deck5: Deck;
-    var deck4: Deck;
-    var masterDeck: Deck;
+    let template: AllDeckTemplate = new BlackJackDeckTemplate();
+    var masterDeck: Deck = new Deck(template, false);
+    masterDeck.addDecks(5, true);
 
     before(function () {
         template = new BlackJackDeckTemplate();
-        deck1 = new Deck(template, false);
-        deck2 = new Deck(template, false);
-        deck3 = new Deck(template, false);
-        deck4 = new Deck(template, false);
-        deck5 = new Deck(template, false);
-        masterDeck = new Deck(template, false);
+        masterDeck.addDecks(5, true);
 
-        masterDeck.push(...deck1);
-        masterDeck.push(...deck2);
-        masterDeck.push(...deck3);
-        masterDeck.push(...deck4);
-        masterDeck.push(...deck5);
-        masterDeck.shuffle();
-
-        let strategy: PlayerStrategem = new PlayerStrategem();
+        let guide: PlayerGuide = new PlayerGuide();
     });
     describe("Test the table", () => {
         it("Should create a new table and assign players to it", () => {
@@ -44,27 +29,14 @@ describe("Tests for player interaction", function () {
             let p3: TablePosition = new TablePosition(new Player());
             let p4: TablePosition = new TablePosition(new Player());
 
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1, p2, p3, p4));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1, p2, p3, p4));
             expect(table.TableSpots.length).to.be.greaterThan(0);
-        });
-    });
-    describe("All players have been dealt cards", () => {
-        it("Should create a new table position and assign players to it", () => {
-            let p1: TablePosition = new TablePosition(new Player());
-            let p2: TablePosition = new TablePosition(new Player());
-            let p3: TablePosition = new TablePosition(new Player());
-            let p4: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1, p2, p3, p4));
-            table.deal();
-            for (let i: number = 0; i < table.TableSpots.length; i++) {
-                expect(table.TableSpots[i].totalHand()).to.equal((table.TableSpots[i].Hand[0].rank) + (table.TableSpots[i].Hand[1].rank));
-            }
         });
     });
     describe("Tests around the Table dealt hands (results)", () => {
         it("Should have a PUSH result because both hands equal the same total", () => {
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
             let playerCard1: Card = masterDeck.getCard(CardFace.TEN, Suit.CLUBS);
             let playerCard2: Card = masterDeck.getCard(CardFace.SEVEN, Suit.DIAMONDS);
             let dealerCard1: Card = masterDeck.getCard(CardFace.NINE, Suit.SPADES);
@@ -78,15 +50,15 @@ describe("Tests for player interaction", function () {
             playerhand.AddCard(playerCard1);
             playerhand.AddCard(playerCard2);
 
-            playerhand = table.PlayerPlays(dealerhand, playerhand);
+            playerhand = table.PlayerHandAutoPlay(dealerhand, playerhand);
             if (!playerhand.Busted()) {
-                table.DealerPlays(dealerhand);
+                table.DealerHandAutoPlay(dealerhand);
             }
-            expect(table.BlackJackResult(dealerhand, playerhand)).to.equal(GameResult.P);
+            expect(table.HandRoundResult(dealerhand, playerhand)).to.equal(GameResult.P);
         });
         it("Should have a LOSS result because the dealers hand is higher", () => {
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
             let card1: Card = masterDeck.getCard(CardFace.TEN, Suit.CLUBS);
             let card2: Card = masterDeck.getCard(CardFace.NINE, Suit.DIAMONDS);
             let card3: Card = masterDeck.getCard(CardFace.NINE, Suit.SPADES);
@@ -100,15 +72,15 @@ describe("Tests for player interaction", function () {
             playerhand.AddCard(card3);
             playerhand.AddCard(card4);
 
-            playerhand = table.PlayerPlays(dealerhand, playerhand);
+            playerhand = table.PlayerHandAutoPlay(dealerhand, playerhand);
             if (!playerhand.Busted()) {
-                table.DealerPlays(dealerhand);
+                table.DealerHandAutoPlay(dealerhand);
             }
-            expect(table.BlackJackResult(dealerhand, playerhand)).to.equal(GameResult.L);
+            expect(table.HandRoundResult(dealerhand, playerhand)).to.equal(GameResult.L);
         });
         it("Should have a WIN result because the dealers hand is higher", () => {
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
             let card1: Card = masterDeck.getCard(CardFace.TEN, Suit.CLUBS);
             let card2: Card = masterDeck.getCard(CardFace.NINE, Suit.DIAMONDS);
             let card3: Card = masterDeck.getCard(CardFace.JACK, Suit.SPADES);
@@ -122,15 +94,15 @@ describe("Tests for player interaction", function () {
             playerhand.AddCard(card3);
             playerhand.AddCard(card4);
 
-            playerhand = table.PlayerPlays(dealerhand, playerhand);
+            playerhand = table.PlayerHandAutoPlay(dealerhand, playerhand);
             if (!playerhand.Busted()) {
-                table.DealerPlays(dealerhand);
+                table.DealerHandAutoPlay(dealerhand);
             }
-            expect(table.BlackJackResult(dealerhand, playerhand)).to.equal(GameResult.W);
+            expect(table.HandRoundResult(dealerhand, playerhand)).to.equal(GameResult.W);
         });
         it("Should make dealer hit a soft 7 but not a hard 7", () => {
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
 
             let card1: Card = masterDeck.getCard(CardFace.SIX, Suit.CLUBS);
             let card2: Card = masterDeck.getCard(CardFace.ACE, Suit.DIAMONDS);
@@ -138,7 +110,7 @@ describe("Tests for player interaction", function () {
             dealerHandSoft.AddCard(card1);
             dealerHandSoft.AddCard(card2);
             expect(dealerHandSoft.Soft()).to.equal(true);
-            dealerHandSoft = table.DealerPlays(dealerHandSoft);
+            dealerHandSoft = table.DealerHandAutoPlay(dealerHandSoft);
             expect(dealerHandSoft.length).to.be.greaterThan(2);
 
             let card3: Card = masterDeck.getCard(CardFace.TEN, Suit.CLUBS);
@@ -148,12 +120,12 @@ describe("Tests for player interaction", function () {
             dealerHandHard.AddCard(card4);
             expect(dealerHandHard.Soft()).to.equal(false);
 
-            dealerHandHard = table.DealerPlays(dealerHandHard);
+            dealerHandHard = table.DealerHandAutoPlay(dealerHandHard);
             expect(dealerHandHard.length).to.be.equal(2);
         });
         it("Should make dealer win with a soft hand but higher value", () => {
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
 
             let card1: Card = masterDeck.getCard(CardFace.SEVEN, Suit.CLUBS);
             let card2: Card = masterDeck.getCard(CardFace.ACE, Suit.DIAMONDS);
@@ -168,42 +140,31 @@ describe("Tests for player interaction", function () {
             dealerhand.AddCard(card1);
             dealerhand.AddCard(card2);
 
-            playerhand = table.PlayerPlays(dealerhand, playerhand);
-            dealerhand = table.DealerPlays(dealerhand);
+            playerhand = table.PlayerHandAutoPlay(dealerhand, playerhand);
+            dealerhand = table.DealerHandAutoPlay(dealerhand);
 
             // TODO HERE NEED TO FIX THE SOFT HAND IS FORCING A HIT
-            expect(table.BlackJackResult(dealerhand, playerhand)).to.equal(GameResult.L);
-        });
-    });
-
-    describe("Tests around the autoPlayer", () => {
-        it("Should hit based on the dealer card with strategy derived from JSON file", () => {
-            let s: PlayerStrategem = new PlayerStrategem();
-            expect(s.getPlayerResponse(5, 11)).to.equal(BlackjackOptions.d);
-            expect(s.getPlayerResponse(2, 17)).to.equal(BlackjackOptions.s);
-            expect(s.getPlayerResponse(6, 9)).to.equal(BlackjackOptions.d);
-            expect(s.getPlayerResponse(7, 16)).to.equal(BlackjackOptions.h);
-
+            expect(table.HandRoundResult(dealerhand, playerhand)).to.equal(GameResult.L);
         });
     });
     describe("Tests around hands dealt", () => {
-        it("Should return null because there is no outcome", () => {
-            let card1: Card = masterDeck.getCard(CardFace.NINE, Suit.CLUBS);
-            let card2: Card = masterDeck.getCard(CardFace.THREE, Suit.DIAMONDS);
-            let card3: Card = masterDeck.getCard(CardFace.TWO, Suit.CLUBS);
-            let card4: Card = masterDeck.getCard(CardFace.NINE, Suit.DIAMONDS);
+        // it("Should return null because there is no outcome", () => {
+        //     let card1: Card = masterDeck.getCard(CardFace.NINE, Suit.CLUBS);
+        //     let card2: Card = masterDeck.getCard(CardFace.THREE, Suit.DIAMONDS);
+        //     let card3: Card = masterDeck.getCard(CardFace.TWO, Suit.CLUBS);
+        //     let card4: Card = masterDeck.getCard(CardFace.NINE, Suit.DIAMONDS);
 
-            let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
-            let dealerhand: BlackjackHand = new BlackjackHand();
-            let playerhand: BlackjackHand = new BlackjackHand();
+        //     let p1: TablePosition = new TablePosition(new Player());
+        //     let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
+        //     let dealerhand: BlackjackHand = new BlackjackHand();
+        //     let playerhand: BlackjackHand = new BlackjackHand();
 
-            dealerhand.AddCard(card1);
-            dealerhand.AddCard(card2);
-            playerhand.AddCard(card3);
-            playerhand.AddCard(card4);
-            expect(table.playDealtHands(dealerhand, playerhand)).to.equal(null);
-        });
+        //     dealerhand.AddCard(card1);
+        //     dealerhand.AddCard(card2);
+        //     playerhand.AddCard(card3);
+        //     playerhand.AddCard(card4);
+        //     expect(table.play(dealerhand, playerhand)).to.equal(null);
+        // });
         it("Should return push because both hands are blackjack", () => {
             let card1: Card = masterDeck.getCard(CardFace.ACE, Suit.CLUBS);
             let card2: Card = masterDeck.getCard(CardFace.KING, Suit.SPADES);
@@ -211,7 +172,7 @@ describe("Tests for player interaction", function () {
             let card4: Card = masterDeck.getCard(CardFace.TEN, Suit.DIAMONDS);
 
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
             let dealerhand: BlackjackHand = new BlackjackHand();
             let playerhand: BlackjackHand = new BlackjackHand();
 
@@ -219,7 +180,7 @@ describe("Tests for player interaction", function () {
             dealerhand.AddCard(card2);
             playerhand.AddCard(card3);
             playerhand.AddCard(card4);
-            expect(table.playDealtHands(dealerhand, playerhand)).to.equal(GameResult.P);
+            expect(table.play(dealerhand, playerhand)).to.equal(GameResult.P);
         });
         it("Should return win because player has blackjack and dealer does not", () => {
             let card1: Card = masterDeck.getCard(CardFace.ACE, Suit.CLUBS);
@@ -228,7 +189,7 @@ describe("Tests for player interaction", function () {
             let card4: Card = masterDeck.getCard(CardFace.TEN, Suit.DIAMONDS);
 
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
             let dealerhand: BlackjackHand = new BlackjackHand();
             let playerhand: BlackjackHand = new BlackjackHand();
 
@@ -236,7 +197,7 @@ describe("Tests for player interaction", function () {
             dealerhand.AddCard(card2);
             playerhand.AddCard(card3);
             playerhand.AddCard(card4);
-            expect(table.playDealtHands(dealerhand, playerhand)).to.equal(GameResult.W);
+            expect(table.play(dealerhand, playerhand)).to.equal(GameResult.W);
         });
         it("Should return loss because dealer has blackjack and player does not", () => {
             let card1: Card = masterDeck.getCard(CardFace.ACE, Suit.CLUBS);
@@ -245,7 +206,7 @@ describe("Tests for player interaction", function () {
             let card4: Card = masterDeck.getCard(CardFace.ACE, Suit.DIAMONDS);
 
             let p1: TablePosition = new TablePosition(new Player());
-            let table: Table = new Table(masterDeck, false, new Array<TablePosition>(p1));
+            let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
             let dealerhand: BlackjackHand = new BlackjackHand();
             let playerhand: BlackjackHand = new BlackjackHand();
 
@@ -253,7 +214,35 @@ describe("Tests for player interaction", function () {
             dealerhand.AddCard(card2);
             playerhand.AddCard(card3);
             playerhand.AddCard(card4);
-            expect(table.playDealtHands(dealerhand, playerhand)).to.equal(GameResult.L);
+            expect(table.play(dealerhand, playerhand)).to.equal(GameResult.L);
+        });
+        it("Should return dealer spartan", () => {
+            // console.log("\n\nsparta!!\n--\n");
+            // let card1: Card = masterDeck.getCard(CardFace.SIX, Suit.CLUBS);
+            // let card2: Card = masterDeck.getCard(CardFace.TWO, Suit.SPADES);
+            // let card3: Card = masterDeck.getCard(CardFace.FOUR, Suit.HEARTS);
+            // let card4: Card = masterDeck.getCard(CardFace.SEVEN, Suit.DIAMONDS);
+            // let card5: Card = masterDeck.getCard(CardFace.THREE, Suit.HEARTS);
+            // let card6: Card = masterDeck.getCard(CardFace.ACE, Suit.DIAMONDS);
+            // let card7: Card = masterDeck.getCard(CardFace.SIX, Suit.DIAMONDS);
+
+            // let dealerhand: BlackjackHand = new BlackjackHand().AddCards(new Array<Card>(card1, card2, card3, card4));
+            // let playerhand: BlackjackHand = new BlackjackHand().AddCards(new Array<Card>(card5, card6, card7));
+            // let p1: TablePosition = new TablePosition(new Player());
+            // let table: TableAutoBot = new TableAutoBot(masterDeck, new Array<TablePosition>(p1));
+
+            // //let result: GameResult = table.play(dealerhand, playerhand);
+
+            // let result: GameResult = table.HandRoundResult(dealerhand, playerhand);
+            // console.log(result);
         });
     });
 });
+
+// not hitting a soft 7
+// Hand Number# 2
+// 1) Dealer Card Face up : ACE	 Not up : FIVE			Dealer Total: 6
+// 2) Player hand (first deal): NINE | EIGHT			Player Total: 17
+// 3#) Dealer hits - got card : QUEEN				Dealer Total: 16
+// 3#) Dealer hits - got card : ACE				Dealer Total: 17
+// 4) Player Final Hand: 17	Dealer Final Hand: 17		PUSH
