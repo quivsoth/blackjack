@@ -1,0 +1,30 @@
+{
+  "name": "playingcards",
+  "version": "0.0.1",
+  "description": "A Deck of Cards",
+  "main": "app.js",
+  "author": "Phillip Knezevich",
+  "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/mocha": "^2.2.48",
+    "@types/node": "^9.4.5",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.0",
+    "ts-node": "^4.1.0",
+    "types": "^0.1.1"
+  },
+  "scripts": {
+    "start": "supervisor app",
+    "test": "mocha -w"
+  },
+  "dependencies": {
+    "@types/angular": "^1.6.42",
+    "@types/xlsx": "0.0.36",
+    "ts-xlsx": "0.0.11"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [],
+  "license": "ISC"
+}

@@ -1,0 +1,29 @@
+Dealer Card Face up : TEN	 Not up : FOUR
+Player hand (first deal): TWO | FOUR
+Player hits - got card : FOUR
+Player doubles
+Dealer hits - got card : ACE
+Dealer hits - got card : THREE
+
+Blackjack? (Player: false	Dealer: false)
+Busted? (Player: false	Dealer: false)
+Player Final Hand: 17	Dealer Final Hand: 18
+Final Result: LOSE
+
+
+
+-------------------------------------------------
+Dealer Card Face up : SIX	 Not up : EIGHT
+Player hand (first deal): ACE | NINE
+Player doubles
+Dealer hits - got card : QUEEN
+
+Blackjack? (Player: false	Dealer: false)
+Busted? (Player: false	Dealer: true)
+Player Final Hand: 11	Dealer Final Hand: 24
+Final Result: WIN
+
+PROBLEM WITH PLAYER DOUBLE DOWN
+
+PLAYER BUSTED NEEDS TO RETURN TO CONSOLE.LOG Final
+
