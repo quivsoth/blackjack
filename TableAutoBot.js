@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var cardEnums_1 = require("./cardEnums");
 var PlayerGuide_1 = require("./PlayerGuide");
 var Table_1 = require("./Table");
+var mongoose = require("mongoose");
 var TableAutoBot = /** @class */ (function (_super) {
     __extends(TableAutoBot, _super);
     function TableAutoBot(deck, _tablePosition) {
@@ -27,9 +28,27 @@ var TableAutoBot = /** @class */ (function (_super) {
                 var dealer = _this.Dealer;
                 _this.deal();
                 var result = _this.play(dealer.Hand, player.Hand);
+                var blackJackResultModel = new mongoose.Schema({
+                    Players: Array,
+                    TablePosition: Table_1.TablePosition
+                });
+                var blackjackResultDocument = mongoose.model('BlackResult', blackJackResultModel);
+                var tally = new blackjackResultDocument({
+                    Players: new Array(),
+                    TablePosition: _this.TableSpots
+                });
+                // const BlackJackResult = new mongoose.Schema({
+                //     name: { type: String, required: true },
+                //     age: Number,
+                // });
+                // const User = mongoose.model<IUser>('BlackResult', BlackJackResult);
+                // const result = new User({
+                //     name: "Larry",
+                //     age: 55
+                // });
+                //result.save().then(() => console.log('added larry'));
                 //Messages
                 console.log("4) Player Final Hand: " + player.Hand.Value() + "\tDealer Final Hand: " + dealer.Hand.Value() + "\t\t" + result);
-                //console.log("\n6) Final result: " + result);
                 console.log("\n---------------------------------------------------------------------------------\n");
                 _this.discard();
                 _this.handnumber += 1;
@@ -57,7 +76,6 @@ var TableAutoBot = /** @class */ (function (_super) {
                 console.log("3c) Dealer blackjack LOSE");
                 result = cardEnums_1.GameResult.L;
             }
-            // Cannot find result,
             if (result === cardEnums_1.GameResult.I) {
                 result = _this.autoRunOutAfterDealt(dealerHand, playerHand);
             }
@@ -87,9 +105,6 @@ var TableAutoBot = /** @class */ (function (_super) {
             return result;
         };
         _this.DealerHandAutoPlay = function (hand) {
-            // console.log("DEALER PLAYS");
-            // console.log("Current hand value (start) : " + hand.Value());
-            // console.log("Soft hand? : " + hand.Soft());
             if (hand.Busted() || hand.Blackjack()) {
                 return hand;
             }

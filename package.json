@@ -19,7 +19,11 @@
   },
   "dependencies": {
     "@types/angular": "^1.6.42",
+    "@types/mongodb": "^3.0.8",
+    "@types/mongoose": "^5.0.7",
     "@types/xlsx": "0.0.36",
+    "mongodb": "^3.0.4",
+    "mongoose": "^5.0.11",
     "number-to-words": "^1.2.3",
     "ts-xlsx": "0.0.11"
   },

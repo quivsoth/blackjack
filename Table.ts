@@ -48,7 +48,6 @@ export class Table {
     }
 
     discard = () => {
-
         // Clean Up - todo this is ugly, the ace is not resetting - by ref by val
         let aces: Card[] = this.Dealer.Hand.filter(x => x.cardface === CardFace.ACE);
         if (aces.length > 0) {
@@ -56,7 +55,6 @@ export class Table {
                 c.rank = 1;
             }
         }
-
         this.BurnPile.push(...this.Dealer.Hand.splice(0) as Array<Card>);
         for (let spot of this.TableSpots) {
             this.BurnPile.push(...spot.Hand.splice(0) as Array<Card>);

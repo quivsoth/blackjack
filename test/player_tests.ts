@@ -239,10 +239,15 @@ describe("Tests for player interaction", function () {
     });
 });
 
-// not hitting a soft 7
-// Hand Number# 2
-// 1) Dealer Card Face up : ACE	 Not up : FIVE			Dealer Total: 6
-// 2) Player hand (first deal): NINE | EIGHT			Player Total: 17
-// 3#) Dealer hits - got card : QUEEN				Dealer Total: 16
-// 3#) Dealer hits - got card : ACE				Dealer Total: 17
-// 4) Player Final Hand: 17	Dealer Final Hand: 17		PUSH
+
+//TODO why did this hit 17 on a two?????
+
+
+// Hand Number# 26
+// 1) Dealer Card Face up : TWO     Not up : THREE                 Dealer Total: 5
+// 2) Player hand (first deal): FIVE | ACE                 Player Total: 6
+// 2#) Player hits - got card : TEN                                Player Total: 16
+// 2#) Player hits - got card : ACE                                Player Total: 17
+// 2#) Player hits - got card : SIX                                Player Total: 23
+// 2c) Player BUSTED!
+// 4) Player Final Hand: 23        Dealer Final Hand: 5            LOSE

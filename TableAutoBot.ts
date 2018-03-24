@@ -5,37 +5,59 @@ import { Deck } from "./Deck";
 import { BlackjackHand } from "./BlackjackHand";
 import { PlayerGuide } from "./PlayerGuide";
 import { Table, TablePosition } from "./Table";
+import * as mongoose from 'mongoose';
+import { IBlackjackResult } from "./interfaces/IBlackjackResult";
 
 export class TableAutoBot extends Table {
-
     handnumber: number;
-
     constructor(deck: Deck, _tablePosition: Array<TablePosition>) {
         super(deck, _tablePosition);
         this.handnumber = 0;
     }
-
-
     autorun = () => {
-        console.log("Hand Number# " + this.handnumber );
+        console.log("Hand Number# " + this.handnumber);
         let cardsToRunTo: number = 40;
         if (this.PlayingDeck.length > cardsToRunTo) {
-
             // var acetracker: Card = this.PlayingDeck.getCard(CardFace.ACE, Suit.CLUBS);
             // console.log("Acetracker: " + acetracker.rank);
             var player = this.TableSpots[0];
             var dealer = this.Dealer;
             this.deal();
-
             let result: GameResult = this.play(dealer.Hand, player.Hand);
+
+            const blackJackResultModel = new mongoose.Schema({
+                Players: Array,
+                TablePosition: TablePosition
+            });
+
+            const blackjackResultDocument = mongoose.model<IBlackjackResult>('BlackResult', blackJackResultModel);
+
+            const tally = new blackjackResultDocument({
+                Players : new Array<Player>(),
+                TablePosition: this.TableSpots
+                }
+            );
+
+
+// const BlackJackResult = new mongoose.Schema({
+//     name: { type: String, required: true },
+//     age: Number,
+// });
+// const User = mongoose.model<IUser>('BlackResult', BlackJackResult);
+// const result = new User({
+//     name: "Larry",
+//     age: 55
+// });
+
+
+            //result.save().then(() => console.log('added larry'));
 
             //Messages
             console.log("4) Player Final Hand: " + player.Hand.Value() + "\tDealer Final Hand: " + dealer.Hand.Value() + "\t\t" + result);
-            //console.log("\n6) Final result: " + result);
             console.log("\n---------------------------------------------------------------------------------\n");
 
             this.discard();
-            this.handnumber +=1;
+            this.handnumber += 1;
             this.autorun();
         }
         //console.log("Cards remaining: " + this.PlayingDeck.length);
@@ -45,7 +67,6 @@ export class TableAutoBot extends Table {
         console.log("1) Dealer Card Face up : " + dealerHand[0].cardface + "\t Not up : " + dealerHand[1].cardface + "\t\t\tDealer Total: " + dealerHand.Value());
         console.log("2) Player hand (first deal): " + playerHand[0].cardface + " | " + playerHand[1].cardface + "\t\t\tPlayer Total: " + playerHand.Value());
         let result: GameResult = GameResult.I;
-
         // TODO : SPLIT Options
 
         // Player / Dealer Blackjack
@@ -62,8 +83,6 @@ export class TableAutoBot extends Table {
             console.log("3c) Dealer blackjack LOSE");
             result = GameResult.L;
         }
-
-        // Cannot find result,
         if (result === GameResult.I) {
             result = this.autoRunOutAfterDealt(dealerHand, playerHand);
         }
@@ -94,9 +113,6 @@ export class TableAutoBot extends Table {
     }
 
     DealerHandAutoPlay = (hand: BlackjackHand): BlackjackHand => {
-        // console.log("DEALER PLAYS");
-        // console.log("Current hand value (start) : " + hand.Value());
-        // console.log("Soft hand? : " + hand.Soft());
         if (hand.Busted() || hand.Blackjack()) {
             return hand;
         }
